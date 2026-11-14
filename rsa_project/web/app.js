@@ -65,6 +65,9 @@ document.querySelectorAll('.tab').forEach((button) => {
       panel.hidden = !selected;
     });
     $('current-page').textContent = button.querySelector('span').textContent;
+    const isAttack = button.dataset.tab === 'attack';
+    $('key-settings').hidden = isAttack;
+    $('workspace').classList.toggle('attack-mode', isAttack);
     say('');
   });
 });
@@ -168,4 +171,32 @@ $('run-tests').addEventListener('click', (event) => run(event.currentTarget, asy
   $('test-log').textContent = data.output;
   timing('tests-timing', [['Chạy kiểm thử và đối chiếu', data.time_ms]]);
   say(data.ok ? 'Các kiểm thử và đối chiếu đều hoàn tất.' : 'Có lỗi kiểm thử. Xem chi tiết bên dưới.', data.ok ? '' : 'error');
+}));
+
+// Tấn công độc lập: chỉ gửi n, e và C, không gửi p/q/bản rõ đã biết.
+function clearAttack() { $('attack-result').hidden = true; }
+['attack-n', 'attack-e', 'attack-c'].forEach((id) => $(id).addEventListener('input', clearAttack));
+function attackPreset(n, e, c) {
+  $('attack-n').value = n; $('attack-e').value = e; $('attack-c').value = c;
+  clearAttack(); say('Đã chọn bộ dữ liệu công khai cho tình huống tấn công.');
+}
+$('attack-slide').addEventListener('click', () => attackPreset('187', '7', '11'));
+$('attack-second').addEventListener('click', () => attackPreset('3233', '17', '2790'));
+$('run-attack').addEventListener('click', (event) => run(event.currentTarget, async () => {
+  clearAttack();
+  const data = await request('/api/attack', {n: $('attack-n').value.trim(), e: $('attack-e').value.trim(), ciphertext: $('attack-c').value.trim()});
+  $('attack-p').textContent = data.p; $('attack-q').textContent = data.q;
+  $('attack-d').textContent = data.d; $('attack-m').textContent = data.message;
+  $('attack-factor-summary').textContent = `${data.n} = ${data.p} × ${data.q}. Đã kiểm tra ${data.attempts} ước lẻ từ 3 đến ${data.p}.`;
+  const divisions = data.factor_trace.map((r) => `${data.n} mod ${r.divisor} = ${r.remainder}${r.remainder === '0' ? '  ← tìm được ước' : ''}`);
+  if (Number(data.attempts) > 9) divisions.splice(8, 0, '… ẩn các phép chia ở giữa …');
+  $('attack-divisions').textContent = divisions.join('\n');
+  $('attack-inverse').textContent = `φ(n) = (${data.p} − 1) × (${data.q} − 1) = ${data.phi}. Dùng Euclid mở rộng: d = ${data.e}⁻¹ mod ${data.phi} = ${data.d}.`;
+  $('attack-decryption').textContent = `M = C^d mod n = ${data.ciphertext}^${data.d} mod ${data.n} = ${data.message}.`;
+  $('attack-check').textContent = `Kiểm tra mã hoá lại: ${data.message}^${data.e} mod ${data.n} = ${data.ciphertext} → ${data.verified ? 'KHỚP' : 'KHÔNG KHỚP'}.`;
+  $('attack-status').textContent = data.verified ? 'Khôi phục và kiểm tra thành công' : 'Kết quả chưa khớp';
+  $('attack-trace').textContent = 'EUCLID MỞ RỘNG\n' + data.euclid.map((r) => `${r.r0} = ${r.q} × ${r.r1} + ${r.remainder}`).join('\n') + '\n\nGIẢI MÃ — BÌNH PHƯƠNG VÀ NHÂN\n' + data.decrypt_trace.map((r) => `Bước ${r.step}: bit=${r.bit}; bình phương=${r.squared}; kết quả=${r.result}`).join('\n');
+  timing('attack-timing', [['Phân tích n, tìm d và giải mã', data.time_ms]]);
+  $('attack-result').hidden = false;
+  say('Đã khôi phục khoá riêng và bản rõ chỉ từ n, e, C.');
 }));

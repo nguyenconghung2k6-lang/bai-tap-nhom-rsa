@@ -29,6 +29,7 @@
 <button id="nav-text" class="tab" data-tab="text" role="tab" aria-selected="false" aria-controls="tab-text"><svg><use href="#i-text"/></svg><span>Văn bản</span><small>02</small></button>
 <button id="nav-file" class="tab" data-tab="file" role="tab" aria-selected="false" aria-controls="tab-file"><svg><use href="#i-file"/></svg><span>Tệp dữ liệu</span><small>03</small></button>
 <button id="nav-tests" class="tab" data-tab="tests" role="tab" aria-selected="false" aria-controls="tab-tests"><svg><use href="#i-tests"/></svg><span>Kiểm thử</span><small>04</small></button>
+<button id="nav-attack" class="tab" data-tab="attack" role="tab" aria-selected="false" aria-controls="tab-attack"><svg><use href="#i-spark"/></svg><span>Tấn công</span><small>05</small></button>
 </nav>
 <div class="sidebar-divider"></div>
 <div class="nav-label">NỀN TẢNG THUẬT TOÁN</div>
@@ -40,8 +41,8 @@
 <main class="page">
 <section class="page-heading"><div><div class="eyebrow"><span></span> THỰC HÀNH MẬT MÃ HỌC</div><h1>Đưa lý thuyết vào <span>thực hành.</span></h1><p>Mã hoá, giải mã và quan sát từng bước của hệ mã RSA.</p></div><div class="heading-tag"><span class="tag-symbol">{ }</span><span>Python<span class="tag-detail">Tự cài đặt thuật toán</span></span></div></section>
 <section class="intro-banner"><div class="banner-icon"><svg><use href="#i-spark"/></svg></div><div><strong>Một thông điệp. Hai chiếc khoá.</strong><p>Khoá công khai để mã hoá. Khoá riêng để khôi phục thông điệp ban đầu.</p></div><div class="banner-formula">C = M<sup>e</sup> <span>mod</span> n</div></section>
-<div class="workspace">
-<aside class="key-card card">
+<div class="workspace" id="workspace">
+<aside class="key-card card" id="key-settings">
 <div class="card-heading"><div class="icon-box lavender"><svg><use href="#i-key"/></svg></div><div><h2>Thiết lập khoá</h2><p>Thông số dùng cho mọi thao tác</p></div></div>
 <div class="key-fields"><div class="field-row"><label for="p">Số nguyên tố <b>p</b><input id="p" value="17" inputmode="numeric" autocomplete="off"></label><label for="q">Số nguyên tố <b>q</b><input id="q" value="11" inputmode="numeric" autocomplete="off"></label></div><label for="e">Số mũ công khai <b>e</b><input id="e" value="7" inputmode="numeric" autocomplete="off"></label></div>
 <div class="key-section-label">CHỌN NHANH BỘ KHOÁ</div>
@@ -81,6 +82,25 @@
 <div class="test-list"><div><span class="test-id">TC01</span><div><strong>Ví dụ trong slide</strong><p>p = 17, q = 11, e = 7</p></div><code>88 → 11 → 88</code></div><div><span class="test-id">TC02</span><div><strong>Ca tự làm</strong><p>p = 61, q = 53, e = 17</p></div><code>65 → 2790 → 65</code></div><div><span class="test-id">TC03</span><div><strong>Ca lỗi</strong><p>e = 2, gcd(e, φ(n)) ≠ 1</p></div><code>Từ chối tạo khoá</code></div></div>
 <button id="run-tests" class="primary"><svg><use href="#i-tests"/></svg>Chạy cả 3 ca kiểm thử<svg class="right-icon"><use href="#i-arrow"/></svg></button>
 <div id="tests-result" hidden><div id="test-status" class="result-head"></div><pre id="test-log"></pre><div id="tests-timing" class="timing"></div></div>
+</div>
+<div id="tab-attack" role="tabpanel" aria-labelledby="nav-attack" class="tab-content" hidden>
+<div class="panel-heading"><div><span class="panel-kicker">TÌNH HUỐNG TẤN CÔNG TOÁN HỌC</span><h2>Phá khoá RSA khi n quá nhỏ</h2><p>Chỉ từ khoá công khai và bản mã, thử tìm lại khoá riêng.</p></div><div class="icon-box attack-icon"><svg><use href="#i-spark"/></svg></div></div>
+<div class="attack-story"><strong>Tình huống: người nghe lén thu được bản mã</strong><p>Người gửi công bố (n, e). Kẻ tấn công thu được C, sau đó phân tích n thành p × q để tính lại d và đọc bản rõ. Demo chỉ sử dụng n nhỏ để quan sát được từng bước.</p><div class="attacker-knows"><span>Biết: n, e, C</span><span>Chưa biết: p, q, d, M</span></div></div>
+<div class="attack-fields"><label for="attack-n">Modulo công khai <b>n</b><input id="attack-n" value="187" inputmode="numeric"></label><label for="attack-e">Số mũ công khai <b>e</b><input id="attack-e" value="7" inputmode="numeric"></label><label for="attack-c">Bản mã thu được <b>C</b><input id="attack-c" value="11" inputmode="numeric"></label></div>
+<div class="attack-actions"><button id="run-attack" class="primary"><svg><use href="#i-spark"/></svg>Thực hiện tấn công<svg class="right-icon"><use href="#i-arrow"/></svg></button><button id="attack-slide" class="secondary">Ví dụ lớp: n = 187</button><button id="attack-second" class="secondary">Ví dụ khác: n = 3233</button></div>
+<p class="help">Chia thử với n ≤ 10¹²; không dùng khoá p, q ở các tab mã hoá.</p>
+<div id="attack-result" hidden>
+<div class="result-head"><h3>Kết quả khôi phục</h3><span class="success" id="attack-status">Đã tìm được khoá riêng</span></div>
+<div class="attack-key-results"><div><small>THỪA SỐ p</small><strong id="attack-p"></strong></div><div><small>THỪA SỐ q</small><strong id="attack-q"></strong></div><div><small>KHOÁ RIÊNG d</small><strong id="attack-d"></strong></div><div class="recovered-message"><small>BẢN RÕ M</small><strong id="attack-m"></strong></div></div>
+<div class="attack-steps">
+<div class="attack-step"><span class="step-bubble">1</span><div><h3>Phân tích n thành hai thừa số nguyên tố</h3><p id="attack-factor-summary"></p><pre id="attack-divisions"></pre></div></div>
+<div class="attack-step"><span class="step-bubble">2</span><div><h3>Tính φ(n) và khôi phục d</h3><p id="attack-inverse"></p></div></div>
+<div class="attack-step"><span class="step-bubble">3</span><div><h3>Giải mã thông điệp</h3><p id="attack-decryption"></p><p id="attack-check" class="attack-verification"></p></div></div>
+</div>
+<div id="attack-timing" class="timing"></div>
+<details class="details"><summary><span>Xem Euclid mở rộng và từng bước giải mã</span><svg><use href="#i-arrow"/></svg></summary><div class="trace" id="attack-trace"></div></details>
+</div>
+<div class="attack-limit"><strong>Bài học:</strong> chọn n quá nhỏ làm việc phân tích thừa số trở nên dễ dàng. Thử nghiệm này không chứng minh phá được RSA với khoá lớn được tạo đúng cách. Padding cũng không cứu được khoá đã bị phân tích thừa số.</div>
 </div>
 </section>
 </div>

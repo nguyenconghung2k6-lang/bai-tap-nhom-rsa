@@ -27,3 +27,7 @@ Nếu đã cài phần web trước đó, ba file giao diện cần cập nhật
 ## Nếu đang dùng repository nhóm
 
 Bản `RSA_Web_BoSung.zip` chỉ chứa `web_app.py`, thư mục `web/` và hướng dẫn. Mở repository mới nhất của nhóm, chép 3 mục này vào thư mục `rsa_project`, nằm cùng cấp với `main.py` và `rsa_core`. Các file web dùng API của bản dự án đã cung cấp; nếu nhóm đã đổi `rsa_core` thì cần kiểm tra tương thích. Không ghi đè những thay đổi của thành viên khác. Chạy và kiểm tra trước khi commit/push.
+
+## Tấn công toán học — phân tích n nhỏ
+
+Chọn **Tấn công** ở thanh chức năng, nhập n=187,e=7,C=11 rồi nhấn **Thực hiện tấn công**. Kết quả: p=11,q=17,d=23,M=88. Chức năng này chỉ dùng n,e,C, không dùng p,q của các tab mã hoá. Có vết chia thử, Euclid mở rộng, giải mã và thời gian để thuyết trình. Giới hạn demo n<=10^12. Xem `docs/TAN_CONG_PHAN_TICH_THUA_SO.md` để biết tình huống và cách giải thích.

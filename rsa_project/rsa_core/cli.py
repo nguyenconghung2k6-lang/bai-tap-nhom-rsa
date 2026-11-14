@@ -9,7 +9,7 @@ from .key_io import save_key, load_key
 from .rsa import encrypt_int, decrypt_int
 from .blocks import encrypt_bytes, decrypt_bytes
 from .primes import is_probable_prime
-from .attacks import multiplicative_demo
+from .attacks import multiplicative_demo, factorization_attack
 
 ROOT = Path(__file__).resolve().parent.parent
 
@@ -209,6 +209,10 @@ def main(argv=None):
     bench.add_argument("--bits", type=int, default=512)
     subs.add_parser("test")
     subs.add_parser("attack")
+    factoring = subs.add_parser("attack-factor", help="Tấn công toán học n nhỏ từ n,e,C")
+    factoring.add_argument("--n", type=int, default=187)
+    factoring.add_argument("--e", type=int, default=7)
+    factoring.add_argument("--ciphertext", type=int, default=11)
     args = parser.parse_args(argv)
     try:
         if args.command is None:
@@ -246,6 +250,12 @@ def main(argv=None):
             benchmark(args.bits)
         elif args.command == "attack":
             attack_demo()
+        elif args.command == "attack-factor":
+            start = perf_counter()
+            result = factorization_attack(args.n, args.e, args.ciphertext)
+            duration = perf_counter()-start
+            print(json.dumps(result, ensure_ascii=False, indent=2))
+            print_timings([("Phân tích n, tìm d và giải mã", duration)])
         elif args.command == "test":
             return 0 if run_tests() else 1
         return 0

@@ -12,6 +12,7 @@ from threading import Timer
 from time import perf_counter
 
 from rsa_core.arithmetic import extended_gcd
+from rsa_core.attacks import factorization_attack
 from rsa_core.blocks import decrypt_bytes, encrypt_bytes
 from rsa_core.keys import generate_keypair, key_from_primes
 from rsa_core.rsa import decrypt_int, encrypt_int
@@ -49,6 +50,19 @@ def blob(data):
 
 
 def handle_api(path, data):
+    if path == "/api/attack":
+        start = perf_counter()
+        result = factorization_attack(integer(data, "n"), integer(data, "e"),
+                                      integer(data, "ciphertext"))
+        time_ms = elapsed(start)
+        # Không dùng p,q,e từ bảng tạo khoá; chỉ dùng dữ liệu công khai đã gửi.
+        response = {name: str(result[name]) for name in
+                    ("n", "e", "ciphertext", "p", "q", "phi", "d", "message", "attempts")}
+        response.update(verified=result["verified"], time_ms=time_ms)
+        for name in ("factor_trace", "euclid", "decrypt_trace"):
+            response[name] = [{key: str(value) for key, value in row.items()}
+                              for row in result[name]]
+        return response
     if path == "/api/generate":
         bits = integer(data, "bits")
         if bits not in (512, 1024):

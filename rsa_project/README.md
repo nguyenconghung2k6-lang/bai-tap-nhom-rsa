@@ -23,6 +23,12 @@ Dự án Python chạy trực tiếp trong **Visual Studio Code**, gồm một c
 
 Web chỉ chạy trên máy tại địa chỉ `127.0.0.1`, không triển khai lên Internet. Chương trình dùng `http.server`, không cần `pip install`. Không chia sẻ p,q,e khi sử dụng cho dữ liệu cần bảo mật; dự án RSA textbook không có OAEP và chỉ dùng để học. Nếu nhóm đã sửa mã nguồn trên GitHub, hãy phối hợp gộp thay đổi thay vì ghi đè bản mới nhất.
 
+## Demo tấn công toán học trên web
+
+Trong giao diện web, chọn **Tấn công** và nhấn **Thực hiện tấn công** với bộ mặc định `(n,e,C)=(187,7,11)`. Chương trình chỉ từ ba giá trị công khai này tìm lại `p=11`, `q=17`, `d=23` và bản rõ `M=88`, hiển thị bảng chia thử, các bước tính và thời gian. Bảng khoá mã hoá được ẩn và không được gửi trong yêu cầu tấn công.
+
+Chọn **Ví dụ khác: n=3233** để thử bộ dữ liệu thứ hai. Demo chia thử được giới hạn `n <= 10^12`, chỉ dành cho khoá nhỏ phục vụ bài tập. Có thể chạy bằng `python main.py attack-factor`. Xem kịch bản và phép tính chi tiết ở `docs/TAN_CONG_PHAN_TICH_THUA_SO.md`; kiểm tra tính năng riêng bằng `python checks/check_factorization.py`.
+
 ## 1. Mở và chạy giao diện Terminal bằng Visual Studio Code
 
 1. Cài **Python 3.10 trở lên**. Trên Windows, bật **Add python.exe to PATH** khi cài.
