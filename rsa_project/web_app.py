@@ -2,6 +2,7 @@
 import base64
 import binascii
 import json
+import os
 import subprocess
 import sys
 import webbrowser
@@ -59,10 +60,15 @@ def handle_api(path, data):
 
     if path == "/api/tests":
         start = perf_counter()
-        run = subprocess.run([sys.executable, "-u", "main.py", "test"], cwd=ROOT,
-                             capture_output=True, text=True, encoding="utf-8",
-                             errors="replace", timeout=90)
-        return {"ok": run.returncode == 0, "output": run.stdout + run.stderr,
+        # Windows có thể dùng CP1252 cho stdout/stderr khi chuyển qua pipe.
+        # encoding ở subprocess.run chỉ giải mã phía cha, không đổi phía con.
+        test_env = os.environ.copy()
+        test_env.update(PYTHONUTF8="1", PYTHONIOENCODING="utf-8")
+        run = subprocess.run([sys.executable, "-X", "utf8", "-u", "main.py", "test"],
+                             cwd=ROOT, env=test_env, stdout=subprocess.PIPE,
+                             stderr=subprocess.STDOUT, text=True, encoding="utf-8",
+                             timeout=90)
+        return {"ok": run.returncode == 0, "output": run.stdout,
                 "time_ms": elapsed(start)}
 
     start = perf_counter()
