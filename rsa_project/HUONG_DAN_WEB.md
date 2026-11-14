@@ -12,7 +12,7 @@
 4. Ví dụ slide: ở tab **Số nguyên**, dùng sẵn p=17, q=11, e=7, M=88 và nhấn **Mã hoá & giải mã**. Mở **Xem các bước trung gian** nếu cần.
 5. Văn bản: chọn **Khoá văn bản**, mở tab **Văn bản**, nhập nội dung, nhấn **Mã hoá văn bản** rồi **Giải mã bản mã**.
 6. Tệp: chọn **Khoá văn bản** hoặc **Tự sinh khoá 512 bit**; chọn tệp gốc tối đa 1 MB, nhấn **Mã hoá & tải xuống**. Để giải mã, chọn tệp `.rsa` đã tải xuống và giữ nguyên p,q,e, rồi nhấn **Giải mã & tải xuống**. Lưu p,q,e khi cần giải mã về sau.
-7. Tab **Kiểm thử** chạy 3 ca chính và phần đối chiếu chuẩn. Thời gian được hiện sau từng thao tác.
+7. Tab **Kiểm thử** chạy 4 ca chính (slide, tự làm, lỗi và số lớn RSA 1024 bit) và phần đối chiếu chuẩn. Thời gian được hiện sau từng thao tác. Nhấn **Chạy cả 4 ca kiểm thử** để xem TC04 với M dài 80 chữ số, kết quả mã hoá, giải mã thường/CRT và thời gian từng phép toán trong log. Bộ số này cố định, không phụ thuộc ô thiết lập khoá.
 
 Nếu báo cổng đang được sử dụng, chạy `python web_app.py --port 8001` và mở http://127.0.0.1:8001/.
 

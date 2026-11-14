@@ -19,7 +19,7 @@ Dự án Python chạy trực tiếp trong **Visual Studio Code**, gồm một c
 4. **Số nguyên**: mặc định theo slide p=17, q=11, e=7, M=88. Nhấn **Mã hoá & giải mã**; mở **Xem các bước trung gian** để thuyết trình.
 5. **Văn bản**: nhấn **Khoá văn bản** ở bên trái (p=61, q=53, e=17), chọn tab Văn bản, nhập nội dung, nhấn **Mã hoá văn bản** rồi **Giải mã bản mã**. Cũng có thể nhập các khoá khác hoặc nhấn **Tự sinh khoá 512 bit**.
 6. **Tệp dữ liệu**: chọn khoá văn bản hoặc sinh khoá; chọn tệp gốc nhỏ tối đa 1 MB; nhấn **Mã hoá & tải xuống**. Tiếp theo chọn tệp `.rsa` vừa tải xuống, giữ nguyên p,q,e và nhấn **Giải mã & tải xuống**. Tệp khôi phục sẽ có tên gốc, có thể kiểm tra byte bằng `fc /b` trên Windows. Lưu p,q,e nếu cần giải mã về sau.
-7. Tab **Kiểm thử** chạy đúng 3 ca chính và phần đối chiếu chuẩn. Thời gian tạo khoá, mã hoá, giải mã hoặc kiểm thử sẽ hiện ngay sau từng thao tác; tệp được đọc/tải qua trình duyệt nên thời gian này không tính thời gian chọn, đọc hoặc lưu tệp.
+7. Tab **Kiểm thử** chạy 4 ca chính (slide, tự làm, lỗi, số lớn 1024 bit) và phần đối chiếu chuẩn. Thời gian tạo khoá, mã hoá, giải mã hoặc kiểm thử sẽ hiện ngay sau từng thao tác; tệp được đọc/tải qua trình duyệt nên thời gian này không tính thời gian chọn, đọc hoặc lưu tệp.
 
 Web chỉ chạy trên máy tại địa chỉ `127.0.0.1`, không triển khai lên Internet. Chương trình dùng `http.server`, không cần `pip install`. Không chia sẻ p,q,e khi sử dụng cho dữ liệu cần bảo mật; dự án RSA textbook không có OAEP và chỉ dùng để học. Nếu nhóm đã sửa mã nguồn trên GitHub, hãy phối hợp gộp thay đổi thay vì ghi đè bản mới nhất.
 
@@ -61,8 +61,9 @@ Trên Windows, nếu `python` không được nhận diện nhưng đã cài Pyt
 | `rsa_core/cli.py` | Menu, tham số dòng lệnh, đo thời gian, đọc/ghi và hiển thị |
 | `web_app.py` | Chạy web cục bộ, kết nối giao diện với lõi RSA |
 | `web/index.html`, `web/style.css`, `web/app.js` | Giao diện web và xử lý tương tác |
-| `tests/test_rsa.py` | Đúng 3 ca chính: slide, tự làm, lỗi |
-| `reference_checks.py` | Đối chiếu Python chuẩn và kiểm tra bổ sung, tách khỏi 3 ca chính |
+| `tests/test_rsa.py` | 4 ca chính: slide, tự làm, lỗi, số lớn 1024 bit |
+| `tests/vectors/rsa_1024.json` | Bộ số và đáp án cố định cho TC04, dùng chung với phần đối chiếu |
+| `reference_checks.py` | Đối chiếu Python chuẩn và kiểm tra bổ sung, tách khỏi 4 ca chính |
 
 Lõi không dùng `pow`, `math.gcd`, `hashlib`, `Crypto`, `cryptography` hay OpenSSL. `secrets` chỉ cung cấp số ngẫu nhiên hệ điều hành; số nguyên lớn, phép nhân/chia và chuyển byte dùng Python chuẩn. `pow` và `math.gcd` chỉ xuất hiện trong bộ kiểm thử để đối chiếu.
 
@@ -145,17 +146,20 @@ Hoặc chọn cấu hình **RSA: Toàn bộ kiểm thử và đối chiếu** r�
 python -m unittest discover -s tests -v
 ```
 
-Bộ kiểm thử chính có **đúng 3 ca** theo yêu cầu:
+Bộ kiểm thử chính có **4 ca**: ba ca ban đầu và một ca số lớn bổ sung:
 
 | Ca | Đầu vào | Kết quả mong đợi |
 |---|---|---|
 | TC01 – Ví dụ slide thầy | p=17, q=11, e=7, M=88 | n=187, d=23, C=11, giải mã lại 88 |
 | TC02 – Tự làm ngoài ví dụ slide | p=61, q=53, e=17, M=65 | n=3233, d=2753, C=2790, giải mã lại 65 |
 | TC03 – Lỗi | p=17, q=11, e=2 | ValueError: không tồn tại nghịch đảo vì gcd(2,160)=2 |
+| TC04 – Số lớn | n 1024 bit, p/q 512 bit, e=65537, M 80 chữ số | n, phi, d, C khớp đáp án cố định; giải mã thường và CRT khôi phục đúng M |
+
+TC04 đọc bộ số cố định từ [`tests/vectors/rsa_1024.json`](tests/vectors/rsa_1024.json), có bản rõ 80 chữ số (263 bit). Đây là bộ dữ liệu tự tạo, không phải vector NIST/RFC. Phần đối chiếu tính lại d, C và bản rõ bằng `pow` của Python chuẩn. Thời gian tạo khoá từ p,q có sẵn, mã hoá, giải mã thường và CRT được in riêng trong log; không gồm thời gian đọc JSON, kiểm tra đáp án hoặc in kết quả.
 
 Mỗi ca in đầu vào, kỳ vọng, thực tế và PASS. TC03 được tính là PASS khi chương trình **bắt đúng lỗi mong đợi**, không phải khi tạo được khoá sai. Xem thêm `docs/KIEM_THU.md`.
 
-Sau 3 ca chính, `main.py test` tự chạy phần **đối chiếu chuẩn riêng** trong `reference_checks.py`: gồm phép toán, toàn bộ 187 đại diện bản rõ của khoá lớp, khoá sinh 512 bit, UTF-8, byte 0, ranh giới khối và tệp thật. Có thể chạy riêng bằng `python reference_checks.py`. Chạy qua biểu tượng Testing hoặc lệnh unittest chỉ chạy 3 ca chính.
+Sau 4 ca chính, `main.py test` tự chạy phần **đối chiếu chuẩn riêng** trong `reference_checks.py`: gồm phép toán, toàn bộ 187 đại diện bản rõ của khoá lớp, bộ số TC04 1024 bit cố định, khoá sinh 512 bit, UTF-8, byte 0, ranh giới khối và tệp thật. Có thể chạy riêng bằng `python reference_checks.py`. Chạy qua biểu tượng Testing hoặc lệnh unittest chỉ chạy 4 ca chính.
 
 Các dòng `[math.gcd]`, `[pow(...)]`, `[RSA với pow]` và các dòng `PASS` in rõ kết quả so với `pow(a,e,n)`, `pow(a,-1,n)`, `math.gcd`; Miller–Rabin được đối chiếu với phép chia thử độc lập trên 0..1999. Cơ sở Miller–Rabin cố định chỉ nằm trong kiểm thử/minh hoạ; sinh khoá dùng 40 cơ sở ngẫu nhiên mỗi lần kiểm tra.
 

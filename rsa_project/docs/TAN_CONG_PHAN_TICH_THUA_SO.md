@@ -55,7 +55,7 @@ python main.py attack-factor --n 187 --e 7 --ciphertext 11
 python checks/check_factorization.py
 ```
 
-Script kiểm tra riêng cho tính năng này bao gồm 2 bộ đáp án đã biết, toàn bộ 187 đại diện bản rõ của modulo lớp, 9 đầu vào lỗi và giới hạn demo. Ba ca kiểm thử chính ở `tests/test_rsa.py` được giữ riêng như yêu cầu của nhóm. `pow` chỉ được dùng làm kết quả chuẩn ở script kiểm tra, không nằm trong thuật toán tấn công.
+Script kiểm tra riêng cho tính năng này bao gồm 2 bộ đáp án đã biết, toàn bộ 187 đại diện bản rõ của modulo lớp, 9 đầu vào lỗi và giới hạn demo. Bốn ca kiểm thử chính ở `tests/test_rsa.py` gồm slide, tự làm, lỗi và số lớn 1024 bit, được giữ riêng với kiểm tra tấn công. `pow` chỉ được dùng làm kết quả chuẩn ở script kiểm tra, không nằm trong thuật toán tấn công.
 
 Demo sửa bản mã nhờ tính nhân trước đây vẫn chạy qua `python main.py attack`.
 

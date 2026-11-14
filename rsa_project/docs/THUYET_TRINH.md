@@ -37,7 +37,7 @@ Header có n giúp từ chối khoá sai modulo, độ dài giúp phát hiện c
 2. F5 cấu hình menu. Mục 1: nhập 17,11,7,88; giải thích Euclid và các bit bình phương/nhân.
 3. Mục 2: nhập 61,53,17; nhập một câu tiếng Việt; chỉ ra bản mã hex và dòng KHỚP.
 4. Terminal: `python main.py demo-file --out demo_output`. Mở tệp nguồn và restored.bin; chỉ ra dòng KHỚP TỪNG BYTE và kích thước tệp.
-5. `python main.py test`: giới thiệu ca tự viết, số ca đối chiếu và kết quả cuối cùng. Ba ca chính là ví dụ slide, bộ số tự làm và khoá lỗi; phần đối chiếu riêng dùng Python chuẩn làm oracle toán học, không tự nhận có NIST vector.
+5. `python main.py test`: giới thiệu ca tự viết, số ca đối chiếu và kết quả cuối cùng. Bốn ca chính là ví dụ slide, bộ số tự làm, khoá lỗi và bộ số RSA 1024 bit cố định (TC04, bản rõ 80 chữ số; giải mã thường và CRT cùng khớp); phần đối chiếu riêng dùng Python chuẩn làm oracle toán học, không tự nhận có NIST vector.
 6. `python main.py benchmark --bits 512`: chỉ ra chi phí tăng theo số khối.
 7. `python main.py attack`: giải thích kẻ sửa bản mã không cần d; chốt giới hạn của textbook RSA và nhu cầu dùng lược đồ chuẩn có padding/xác thực.
 
@@ -56,7 +56,7 @@ Do (M*r)^e mod n = (M^e)*(r^e) mod n, từ bản mã C và khoá công khai, k�
 | Tự cài RSA và bốn thuật toán nền | arithmetic.py, primes.py, keys.py, rsa.py |
 | Mã hoá và giải mã khôi phục bản gốc | Menu 1–3, encrypt/decrypt, kiểm thử round-trip |
 | Ví dụ học trên lớp | number và test_classroom_exact |
-| 3 ca theo yêu cầu: slide, tự làm, lỗi + đối chiếu chuẩn | tests/test_rsa.py; reference_checks.py đối chiếu pow và math.gcd |
+| 4 ca: slide, tự làm, lỗi, số lớn 1024 bit + đối chiếu chuẩn | tests/test_rsa.py; reference_checks.py đối chiếu pow và math.gcd |
 | In kết quả đối chiếu | main.py test, phần ĐỐI CHIẾU THƯ VIỆN CHUẨN |
 | Chia module và tách giao diện | rsa_core/cli.py riêng, main.py chỉ gọi entry point |
 | Dữ liệu thật | examples/message_vi.txt và demo-file |

@@ -1,4 +1,4 @@
-"""Kiểm tra bổ sung demo tấn công; không thay đổi 3 ca chính trong tests/."""
+"""Kiểm tra bổ sung demo tấn công; tách khỏi 4 ca chính trong tests/."""
 from pathlib import Path
 import sys
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))

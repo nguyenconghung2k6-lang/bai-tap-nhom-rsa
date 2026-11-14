@@ -1,0 +1,10 @@
+Kiểm tra cập nhật TC04 — RSA 1024 bit
+PASS: 4/4 ca kiểm thử chính và toàn bộ đối chiếu Python chuẩn; log ở evidence/tests.txt.
+PASS: TC04 với p/q 512 bit, n 1024 bit, M 80 chữ số; n/phi/d/C khớp dữ liệu cố định; giải mã thường và CRT khớp M.
+PASS: kiểm tra âm bổ sung — thay đáp án C bằng C+1 làm TC04 thất bại đúng mong đợi.
+PASS: JavaScript event flow với DOM giả lập và HTTP thật: tab Kiểm thử, chạy 4 ca, log đầy đủ số lớn, thời gian tổng, trạng thái thất bại và xoá kết quả cũ khi mất kết nối.
+PASS: API kiểm thử dưới môi trường kế thừa PYTHONIOENCODING=cp1252; tiếng Việt và toàn bộ chữ số vẫn giữ nguyên, không có UnicodeEncodeError hoặc ký tự thay thế.
+PASS: chức năng tấn công vẫn chạy hai ví dụ, chỉ gửi n/e/C, hiện các bước và thời gian, xử lý đầu vào lỗi.
+PASS: kiểm tra tấn công riêng — 2 ví dụ, toàn bộ 187 bản rõ, 9 đầu vào lỗi và giới hạn demo.
+PASS: cú pháp Python/JavaScript; HTML không trùng ID, đủ 4 dòng test và nút chạy 4 ca.
+Giới hạn: dùng DOM giả lập để kiểm tra tương tác, chưa xác minh hình ảnh render trên trình duyệt trong môi trường này.

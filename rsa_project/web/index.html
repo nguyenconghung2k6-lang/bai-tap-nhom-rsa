@@ -43,7 +43,7 @@
 <section class="intro-banner"><div class="banner-icon"><svg><use href="#i-spark"/></svg></div><div><strong>Một thông điệp. Hai chiếc khoá.</strong><p>Khoá công khai để mã hoá. Khoá riêng để khôi phục thông điệp ban đầu.</p></div><div class="banner-formula">C = M<sup>e</sup> <span>mod</span> n</div></section>
 <div class="workspace" id="workspace">
 <aside class="key-card card" id="key-settings">
-<div class="card-heading"><div class="icon-box lavender"><svg><use href="#i-key"/></svg></div><div><h2>Thiết lập khoá</h2><p>Thông số dùng cho mọi thao tác</p></div></div>
+<div class="card-heading"><div class="icon-box lavender"><svg><use href="#i-key"/></svg></div><div><h2>Thiết lập khoá</h2><p>Thông số cho mã hoá và giải mã</p></div></div>
 <div class="key-fields"><div class="field-row"><label for="p">Số nguyên tố <b>p</b><input id="p" value="17" inputmode="numeric" autocomplete="off"></label><label for="q">Số nguyên tố <b>q</b><input id="q" value="11" inputmode="numeric" autocomplete="off"></label></div><label for="e">Số mũ công khai <b>e</b><input id="e" value="7" inputmode="numeric" autocomplete="off"></label></div>
 <div class="key-section-label">CHỌN NHANH BỘ KHOÁ</div>
 <button id="slide-preset" type="button" class="preset selected"><span class="preset-radio"></span><div><strong>Ví dụ trong slide</strong><small>p = 17 &nbsp; q = 11 &nbsp; e = 7</small></div><span class="preset-tag">SLIDE</span></button>
@@ -78,9 +78,10 @@
 <div class="file-steps"><strong>Để khôi phục tệp ban đầu</strong><p><span>1</span> Chọn lại tệp <b>.rsa</b> vừa tải xuống.</p><p><span>2</span> Giữ nguyên p, q, e và nhấn <b>Giải mã &amp; tải xuống</b>.</p></div><div id="file-timing" class="timing" hidden></div>
 </div>
 <div id="tab-tests" role="tabpanel" aria-labelledby="nav-tests" class="tab-content" hidden>
-<div class="panel-heading"><div><span class="panel-kicker">THỬ NGHIỆM 04</span><h2>Kiểm tra tính đúng đắn</h2><p>Ba ca kiểm thử và đối chiếu với thư viện chuẩn Python.</p></div><div class="icon-box soft"><svg><use href="#i-tests"/></svg></div></div>
-<div class="test-list"><div><span class="test-id">TC01</span><div><strong>Ví dụ trong slide</strong><p>p = 17, q = 11, e = 7</p></div><code>88 → 11 → 88</code></div><div><span class="test-id">TC02</span><div><strong>Ca tự làm</strong><p>p = 61, q = 53, e = 17</p></div><code>65 → 2790 → 65</code></div><div><span class="test-id">TC03</span><div><strong>Ca lỗi</strong><p>e = 2, gcd(e, φ(n)) ≠ 1</p></div><code>Từ chối tạo khoá</code></div></div>
-<button id="run-tests" class="primary"><svg><use href="#i-tests"/></svg>Chạy cả 3 ca kiểm thử<svg class="right-icon"><use href="#i-arrow"/></svg></button>
+<div class="panel-heading"><div><span class="panel-kicker">THỬ NGHIỆM 04</span><h2>Kiểm tra tính đúng đắn</h2><p>Bốn ca kiểm thử, gồm bộ số RSA 1024 bit, và đối chiếu với Python chuẩn.</p></div><div class="icon-box soft"><svg><use href="#i-tests"/></svg></div></div>
+<div class="test-list"><div><span class="test-id">TC01</span><div><strong>Ví dụ trong slide</strong><p>p = 17, q = 11, e = 7</p></div><code>88 → 11 → 88</code></div><div><span class="test-id">TC02</span><div><strong>Ca tự làm</strong><p>p = 61, q = 53, e = 17</p></div><code>65 → 2790 → 65</code></div><div><span class="test-id">TC03</span><div><strong>Ca lỗi</strong><p>e = 2, gcd(e, φ(n)) ≠ 1</p></div><code>Từ chối tạo khoá</code></div><div><span class="test-id">TC04</span><div><strong>Số lớn · RSA 1024 bit</strong><p>p, q: 512 bit · e = 65537 · M: 80 chữ số</p></div><code>Đáp án cố định + CRT</code></div></div>
+<button id="run-tests" class="primary"><svg><use href="#i-tests"/></svg>Chạy cả 4 ca kiểm thử<svg class="right-icon"><use href="#i-arrow"/></svg></button>
+<p class="test-explanation">Các ca dùng bộ dữ liệu cố định, không phụ thuộc ô thiết lập khoá. TC04 hiển thị đầy đủ số lớn, kết quả kỳ vọng/thực tế và thời gian tạo khoá, mã hoá, giải mã thường, giải mã CRT trong log.</p>
 <div id="tests-result" hidden><div id="test-status" class="result-head"></div><pre id="test-log"></pre><div id="tests-timing" class="timing"></div></div>
 </div>
 <div id="tab-attack" role="tabpanel" aria-labelledby="nav-attack" class="tab-content" hidden>

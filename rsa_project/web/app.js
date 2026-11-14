@@ -10,7 +10,7 @@ function say(message, kind = '') {
 function ms(value) {
   return Number(value).toFixed(4) + ' ms';
 }
-function timing(id, parts) {
+function timing(id, parts, noteText = 'Đo thời gian xử lý bằng perf_counter · Không tính chờ nhập hoặc đọc/ghi tệp.') {
   const node = $(id);
   node.replaceChildren();
   parts.forEach(([name, value]) => {
@@ -30,7 +30,7 @@ function timing(id, parts) {
   });
   const note = document.createElement('p');
   note.className = 'timing-note';
-  note.textContent = 'Đo thời gian xử lý bằng perf_counter · Không tính chờ nhập hoặc đọc/ghi tệp.';
+  note.textContent = noteText;
   node.append(note);
   node.hidden = false;
 }
@@ -164,12 +164,14 @@ async function fileAction(encrypt) {
 $('encrypt-file').addEventListener('click', (event) => run(event.currentTarget, () => fileAction(true)));
 $('decrypt-file').addEventListener('click', (event) => run(event.currentTarget, () => fileAction(false)));
 $('run-tests').addEventListener('click', (event) => run(event.currentTarget, async () => {
+  $('tests-result').hidden = true;
   const data = await request('/api/tests', {});
   $('tests-result').hidden = false;
-  $('test-status').textContent = data.ok ? '●  3 CA KIỂM THỬ VÀ ĐỐI CHIẾU: THÀNH CÔNG' : '●  CÓ KIỂM THỬ THẤT BẠI';
+  $('test-status').textContent = data.ok ? '●  4 CA KIỂM THỬ VÀ ĐỐI CHIẾU: THÀNH CÔNG' : '●  CÓ KIỂM THỬ THẤT BẠI';
   $('test-status').style.color = data.ok ? '#19946d' : '#c35a43';
   $('test-log').textContent = data.output;
-  timing('tests-timing', [['Chạy kiểm thử và đối chiếu', data.time_ms]]);
+  timing('tests-timing', [['Chạy kiểm thử và đối chiếu', data.time_ms]],
+    'Tổng thời gian gồm khởi động Python, đọc dữ liệu test, chạy 4 ca và đối chiếu. Thời gian từng phép toán của TC04 nằm trong log.');
   say(data.ok ? 'Các kiểm thử và đối chiếu đều hoàn tất.' : 'Có lỗi kiểm thử. Xem chi tiết bên dưới.', data.ok ? '' : 'error');
 }));
 

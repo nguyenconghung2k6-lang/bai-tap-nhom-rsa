@@ -1,7 +1,8 @@
-"""Đối chiếu chuẩn độc lập, tách khỏi ba ca kiểm thử chính.
+"""Đối chiếu chuẩn độc lập, tách khỏi bốn ca kiểm thử chính.
 
 pow/math.gcd chỉ là oracle. Không được import module này vào thuật toán lõi.
 """
+import json
 import math
 import random
 from pathlib import Path
@@ -19,7 +20,7 @@ def require(condition, label):
 
 
 def run_reference_checks():
-    print("\n=== ĐỐI CHIẾU THƯ VIỆN CHUẨN (tách khỏi TC01–TC03) ===")
+    print("\n=== ĐỐI CHIẾU THƯ VIỆN CHUẨN (tách khỏi TC01–TC04) ===")
     for a, b in ((240, 46), (7, 160), (-31, 12), (0, 0), (0, -5), (-5, 0)):
         g, x, y = extended_gcd(a, b)
         require(g == math.gcd(a, b) and a*x+b*y == g, "Euclid/Bezout")
@@ -39,6 +40,24 @@ def run_reference_checks():
         require(cipher == pow(message, e, public.n), "RSA mã hoá")
         require(plain == pow(cipher, private.d, public.n) == message, "RSA giải mã")
         print(f"[RSA với pow] M={message}, C tự viết={cipher}, C chuẩn={pow(message,e,public.n)}, M'={plain}: PASS")
+    # Cùng bộ số TC04, nhưng đáp án được tính lại bằng pow của Python chuẩn.
+    vector = json.loads((Path(__file__).parent / "tests/vectors/rsa_1024.json").read_text(encoding="utf-8"))
+    p, q, e, message = (int(vector[name]) for name in ("p", "q", "e", "message"))
+    n, phi = p * q, (p - 1) * (q - 1)
+    expected_d = pow(e, -1, phi)
+    expected_c = pow(message, e, n)
+    require(n.bit_length() == vector["bits"] == 1024, "TC04 độ dài khoá")
+    require((int(vector["n"]), int(vector["phi"]), int(vector["d"]), int(vector["ciphertext"]))
+            == (n, phi, expected_d, expected_c), "TC04 dữ liệu đáp án cố định")
+    public, private = key_from_primes(p, q, e)
+    cipher = encrypt_int(message, public)
+    require(private.d == expected_d and cipher == expected_c, "TC04 nghịch đảo và mã hoá")
+    plain = decrypt_int(cipher, private)
+    plain_crt = decrypt_int(cipher, private, use_crt=True)
+    require(plain == plain_crt == pow(cipher, expected_d, n) == message, "TC04 giải mã thường/CRT/pow")
+    print(f"[TC04 / pow / 1024 bit] C tự viết={cipher}")
+    print(f"  C chuẩn={expected_c}")
+    print(f"  d khớp pow(e,-1,phi); giải mã thường = CRT = pow = M ({message}): PASS")
     public, private = key_from_primes(17, 11, 7)
     for message in range(public.n):
         cipher = encrypt_int(message, public)
