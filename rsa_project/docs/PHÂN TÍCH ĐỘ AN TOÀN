@@ -1,0 +1,166 @@
+4. Độ an toàn của hệ mã RSA
+4.1 Kích thước không gian khóa và độ an toàn
+Độ an toàn cổ điển của RSA phụ thuộc vào độ dài mô-đun n = p × q (với p, q là hai số nguyên tố lớn), chất lượng sinh khóa và cách triển khai. Không nên đồng nhất số bit của mô-đun với số bit an toàn tương đương [11].
+Theo NIST SP 800-57 Part 1 Rev. 5, RSA-2048 cung cấp mức an toàn cổ điển khoảng 112 bit và RSA-3072 khoảng 128 bit [11].
+Các công trình phân tích thừa số nguyên lớn cho thấy tiến bộ của thuật toán sàng trường số và năng lực tính toán. Những kết quả dưới đây là các mốc thực nghiệm, không đồng nghĩa mọi khóa có cùng độ dài đều đã bị phân tích [12]–[14].
+RSA-512 (512 bit) đã được phân tích thành công vào năm 1999. Mức khóa này không còn đáp ứng yêu cầu bảo mật hiện đại [11].
+RSA-768 (768 bit) được nhóm Kleinjung và cộng sự phân tích thành công năm 2009 bằng phương pháp sàng trường số. Công trình công bố chi tiết các giai đoạn và chi phí tính toán [12].
+RSA-250 (829 bit) được công bố phân tích thành công năm 2020 [13]. RSA-260 (862 bit) được Eric Lu công bố kết quả phân tích tháng 9/2026 bằng GNFS tối ưu trên GPU; bài viết gốc đưa ra các thừa số và mô tả tài nguyên tính toán [14].
+Kết luận: RSA-1024 không đáp ứng mức an toàn 112 bit theo NIST. RSA-2048 và RSA-3072 vẫn có mức an toàn cổ điển lần lượt khoảng 112 và 128 bit khi sinh khóa, triển khai đúng; tuy nhiên không chống được thuật toán Shor trên máy tính lượng tử chịu lỗi đủ mạnh [11], [19], [25].
+Bảng 1 tổng hợp trạng thái theo độ dài khóa.
+Độ dài module
+Trạng thái phân tích công khai
+Mức đánh giá
+Nguồn
+512 bit
+Đã phân tích năm 1999
+Không an toàn
+[11] 
+768 bit
+Đã phân tích tháng 12/2009
+Không an toàn
+[12] 
+829 bit
+Đã phân tích tháng 2/2020
+Không an toàn
+[13] 
+862 bit
+Đã công bố phân tích tháng 9/2026 [14] 
+Không an toàn
+[14] 
+1024 bit
+Chưa có công bố công khai
+Không đạt mức an toàn tối thiểu 112 bit theo NIST 
+[11] 
+2048 bit
+Chưa có
+Khoảng 112 bit an toàn cổ điển; cần chuyển đổi PQC theo lộ trình NIST 
+[11], [25] 
+3072 bit trở lên
+Chưa có
+RSA-3072 khoảng 128 bit an toàn cổ điển; không chống Shor 
+[11], [25] 
+
+Bảng 1. Trạng thái phân tích thừa số và đánh giá theo độ dài module RSA.
+4.2 Các kiểu tấn công nhắm vào RSA
+Các nhóm tấn công RSA có thể phân thành vét cạn, khai thác toán học, kênh kề thời gian, gây lỗi tính toán và chọn bản mã. Cần phân biệt việc phân tích thừa số với các lỗ hổng do triển khai hoặc giao thức [10], [15]–[18].
+4.2.1 Tấn công vét cạn (Brute force) 
+Vét cạn theo nghĩa thử các khóa bí mật không phải chiến lược thực tế đối với RSA được sinh khóa đúng cách. Tấn công tổng quát đáng chú ý trên máy tính cổ điển là phân tích mô-đun bằng GNFS; các khóa sinh yếu còn có thể bị khai thác bằng kỹ thuật chuyên biệt [10], [12].
+4.2.2  Tấn công toán học
+Tấn công toán học nhằm khai thác cấu trúc của RSA, đặc biệt là phân tích n thành p và q. GNFS là thuật toán tổng quát hiệu quả nhất được biết đến cho các số nguyên lớn không có cấu trúc đặc biệt; không phải mọi tấn công toán học đều có chi phí tương đương GNFS [10], [12].
+4.2.3 Tấn công dựa trên thời gian
+Tấn công thời gian (timing attack) là tấn công kênh kề, khai thác sai khác thời gian trong một số triển khai phép toán khóa bí mật RSA. Kocher đã mô tả nguyên lý này; khả năng khai thác tùy thuộc triển khai, điều kiện đo và phòng vệ. Các biện pháp quan trọng gồm xử lý hạn chế rò rỉ thời gian và RSA blinding [15].
+4.2.4 Tấn công dựa trên lỗi phần cứng
+Tấn công gây lỗi (fault attack) có thể làm sai một phép tính chữ ký RSA-CRT. Trong một số điều kiện, chỉ một chữ ký lỗi cùng dữ liệu liên quan đã đủ để suy ra thừa số của mô-đun. Lỗi có thể do phần cứng, môi trường hoặc thao tác cố ý; không thể kết luận mọi cuộc tấn công đều đòi hỏi tiếp cận vật lý trực tiếp [16].
+4.2.5 Tấn công chọn bản mã
+Textbook RSA có tính chất nhân: E(m₁)E(m₂) ≡ E(m₁m₂) (mod n). Nếu tồn tại oracle giải mã phù hợp, kẻ tấn công có thể biến đổi bản mã mục tiêu; ví dụ chọn r nguyên tố cùng nhau với n, đặt C′ = C·rᵉ mod n, rồi khôi phục M = M′·r⁻¹ mod n. Ví dụ này không áp dụng nguyên dạng cho RSA-OAEP được triển khai đúng [17].
+Bước 1: Chọn r sao cho gcd(r, n) = 1 và tạo C′ = C × rᵉ mod n.
+Bước 2: Gửi C′ đến oracle giải mã (nếu có quyền truy vấn); nhận M′ = M × r mod n.
+Bước 3: Tính nghịch đảo r⁻¹ mod n rồi suy ra M = M′ × r⁻¹ mod n. Không được thay phép chia thông thường cho phép nhân với nghịch đảo mô-đun [17].
+*Bảng 2. Các nhóm tấn công RSA, điều kiện khai thác và biện pháp phòng chống.
+Kiểu tấn công
+Khai thác
+Biện pháp phòng chống chính
+Phân tích thừa số (GNFS)
+Độ dài module
+Chọn độ dài khóa phù hợp; sinh khóa đúng chuẩn; chuyển sang PQC để chống nguy cơ lượng tử [11], [25] 
+Dựa trên thời gian
+Thời gian giải mã phụ thuộc khóa 
+Triển khai hạn chế rò rỉ thời gian (constant-time); RSA blinding; kiểm thử kênh kề [15] 
+Lỗi phần cứng
+Thông tin thông qua các kết quả tính toán bị lỗi, thực hiện sai lệnh và nhả ra một chữ ký số bị lỗi  
+Kiểm tra kết quả chữ ký RSA-CRT trước khi xuất; phát hiện lỗi; bảo vệ phần cứng [16] 
+Chọn bản mã
+Tính chất nhân (Multiplicative property) của thuật toán RSA nguyên thủy. 
+Sử dụng RSA-OAEP đúng chuẩn cho mã hóa; tránh oracle giải mã và xử lý lỗi phân biệt [17], [18] 
+
+Bảng 2. Các nhóm tấn công RSA, điều kiện khai thác và biện pháp phòng chống.
+4.3 Chi phí tấn công
+Ba hướng đánh giá chi phí gồm: phân tích thừa số cổ điển bằng GNFS, phân tích bằng thuật toán Shor trên máy tính lượng tử chịu lỗi và khai thác lỗi triển khai/giao thức. Các chi phí không thể so sánh trực tiếp nếu không nêu rõ mô hình tài nguyên [12], [14], [16], [19].
+4.3.1 Máy tính cổ điển: sàng trường số tổng quát (GNFS)
+GNFS có độ phức tạp dưới hàm mũ theo kích thước số nguyên và là phương pháp tổng quát hiệu quả nhất được biết đến để phân tích các mô-đun RSA lớn không có cấu trúc đặc biệt. Công trình RSA-768 ghi nhận chi phí tính toán đáng kể; RSA-250 tiếp tục nâng kỷ lục công khai năm 2020 [12], [13].
+Theo báo cáo kỹ thuật trực tiếp của Eric Lu, RSA-260 tiêu tốn ước tính khoảng 4.900 GPU-days (xấp xỉ 13,5 GPU-years), tương đương khoảng 400.000 USD theo giá GPU giả định. Tác giả ngoại suy RSA-1024 cần khoảng 78 lần công sức RSA-260, với chi phí GPU khoảng 30–32 triệu USD. Đây là dự báo theo mô hình, không phải chi phí thực nghiệm phá RSA-1024; 383 triệu USD là ngoại suy theo chi phí CPU, không được dùng thay cho ước tính GPU [14].
+Module
+Thước đo chi phí
+Ghi chú
+Nguồn
+RSA-768
+~ 1.500 năm-lõi CPU (Opteron 2,2 GHz) cho bước sàng 
+Hoàn thành tháng 12/2009 
+[12] 
+RSA-829 (RSA-250)
+~ 2.700 năm-lõi CPU 
+Chạy trên hàng chục nghìn máy chủ trong vài tháng (02/2020) 
+[13] 
+RSA-862 (RSA-260)
+~4.900 GPU-days (~13,5 GPU-years); ~400.000 USD 
+Ước tính của nhóm thực hiện, công bố 09/2026 
+[14] 
+RSA-1024
+~78 lần RSA-260; ~30–32 triệu USD nếu tính theo GPU 
+Ngoại suy từ báo cáo gốc, chưa phải kết quả phá RSA-1024 
+[14]
+RSA-2048
+~91,2 tỷ lần RSA-260 (theo mô hình GNFS) 
+Ngoại suy lý thuyết, không phải đo lường thực tế 
+[14] 
+
+Bảng 3. Chi phí phân tích thừa số bằng GNFS trên máy tính cổ điển.
+4.3.2 Máy tính lượng tử: thuật toán Shor
+Thuật toán Shor (1994) cho phép phân tích số nguyên trong thời gian đa thức trên mô hình máy tính lượng tử [19]. Gidney (2025) đưa ra ước tính tài nguyên dưới một triệu qubit vật lý nhiễu để phân tích RSA-2048 với các giả định phần cứng cụ thể. Đây là phân tích lý thuyết tài nguyên, không phải kết quả phá RSA-2048 trên phần cứng thực tế [20].
+Nghiên cứu Pinnacle của Webster và cộng sự (2026) ước tính có thể phân tích RSA-2048 với dưới 100.000 qubit vật lý khi sử dụng mã sửa lỗi lượng tử QLDPC, giả định tỷ lệ lỗi vật lý 10⁻³, chu kỳ mã 1 µs và thời gian phản ứng 10 µs. Đây là kết quả thiết kế và ước tính tài nguyên, chưa chứng minh RSA-2048 đã bị phá trên máy tính lượng tử thực tế [21].
+4.3.3 Khai thác lỗi phần cứng
+Khác với hai phương pháp tiếp cận trên, các tấn công kênh kề và tấn công giao thức hoàn toàn không cần giải bài toán phân tích thừa số. Thay vào đó, chúng khai thác sơ hở khi hệ thống thực thi thuật toán.
+Kocher trình bày tấn công thời gian đối với một số triển khai RSA [15]. Boneh, DeMillo và Lipton cho thấy lỗi trong tính toán mật mã, đặc biệt RSA-CRT, có thể làm lộ khóa [16]. ROBOT minh họa rủi ro từ oracle giải mã RSA PKCS#1 v1.5 (Một tiêu chuẩn định dạng dữ liệu được sử dụng trong hệ mật mã RSA) trong các triển khai TLS; khả năng khai thác và số truy vấn phụ thuộc từng mục tiêu, không có một chi phí cố định cho mọi hệ thống [18].
+Điểm then chốt là chi phí cho các cuộc tấn công này rất khó định lượng bằng một con số chung, và đặc biệt chúng gần như không phụ thuộc vào độ dài mô-đun. Do đó, việc hệ thống tăng kích thước khóa RSA từ 2048 lên 4096 bit sẽ không có tác dụng phòng ngừa nếu hạ tầng vật lý và giao thức không được bảo vệ đúng cách.
+Hướng tấn công
+Tài nguyên chủ yếu
+Phụ thuộc độ dài khóa
+Nguồn
+GNFS cổ điển
+CPU/GPU, bộ nhớ và thời gian chạy GNFS 
+Rất mạnh: Chi phí tăng theo cận hàm mũ 
+[12]–[14] 
+Thuật toán Shor
+Máy tính lượng tử sửa lỗi quy mô lớn (hiện chưa có) 
+Tài nguyên tăng theo đa thức trong mô hình thuật toán lượng tử; chi phí sửa lỗi lớn 
+[19]–[21] 
+Kênh kề, lỗi, oracle
+Quyền truy cập vật lý, đo đạc hoặc truy vấn hệ thống đích 
+Phụ thuộc triển khai, oracle và điều kiện truy cập; khóa dài không tự loại bỏ lỗi 
+[15]–[18] 
+
+Bảng 4. So sánh ba hướng tấn công.
+4.4 RSA còn được khuyến nghị hay đã bị loại bỏ?
+Tính đến tháng 11/2026, RSA vẫn hiện diện trong nhiều hệ thống chữ ký số và hạ tầng khóa công khai. Tuy nhiên, NIST IR 8547 (bản chính thức tháng 10/2026) đặt ra lộ trình chuyển đổi các cơ chế khóa công khai dễ bị tấn công lượng tử sang tiêu chuẩn hậu lượng tử. Cần phân biệt phạm vi khuyến nghị/tiêu chuẩn NIST với một lệnh cấm toàn cầu [25].
+4.4.1 Chuẩn mật mã hậu lượng tử
+Ngày 13/8/2024, NIST công bố ba chuẩn hậu lượng tử đầu tiên [22]–[24] :
+FIPS 203 (ML-KEM): cơ chế đóng gói khóa dựa trên mạng tinh thể [22].
+FIPS 204 (ML-DSA): thuật toán chữ ký số dựa trên mạng tinh thể [23].
+FIPS 205 (SLH-DSA): thuật toán chữ ký số dựa trên hàm băm, không trạng thái [24].
+ML-KEM hỗ trợ thiết lập khóa bí mật chung; ML-DSA và SLH-DSA phục vụ chữ ký số. Việc lựa chọn thuật toán thay thế phụ thuộc chức năng, giao thức và yêu cầu tương thích. Chuyển đổi sớm giúp giảm rủi ro “thu thập hôm nay, giải mã sau” [22]–[25].
+4.4.2 NIST IR 8547
+NIST IR 8547 bản chính thức được công bố ngày 27/10/2026. Tài liệu mô tả lộ trình chuyển đổi khỏi các thuật toán khóa công khai dễ bị tấn công lượng tử, với mục tiêu hoàn tất chuyển đổi rộng rãi vào năm 2035 và các mốc ưu tiên sớm hơn đối với một số hệ thống liên bang. Việc áp dụng trạng thái deprecated/disallowed phải xét theo thuật toán, mục đích sử dụng và văn bản NIST liên quan; không nên diễn giải là lệnh cấm RSA trên toàn thế giới [25].
+Trong thuật ngữ chuyển đổi của NIST, “acceptable”, “deprecated”, “disallowed” và “legacy use” mô tả trạng thái chấp thuận theo mục đích sử dụng và tiêu chuẩn áp dụng. Các hệ thống liên bang Hoa Kỳ còn phải tuân thủ yêu cầu chuyển đổi riêng; vì vậy, độ dài khóa RSA lớn hơn không phải giải pháp chống lượng tử dài hạn [25].
+4.4.3 Khuyến nghị thực hành
+Trên cơ sở các nguồn đã dẫn, có ba hành động nên ưu tiên:
+Kiểm kê các hệ thống sử dụng RSA, xác định vai trò (chữ ký số, trao đổi khóa, mã hóa), thời hạn bảo mật dữ liệu và khả năng nâng cấp PKI/HSM để lập kế hoạch chuyển đổi [25].
+Trong giai đoạn chuyển đổi, có thể xem xét cơ chế lai kết hợp thành phần cổ điển và hậu lượng tử nếu giao thức, cách kết hợp khóa và các tiêu chuẩn liên quan cho phép; không được mặc định mọi cách kết hợp đều an toàn [22], [25].
+Ưu tiên loại bỏ cơ chế trao đổi khóa RSA dùng PKCS#1 v1.5 dễ bị oracle giải mã trong TLS cũ; áp dụng cấu hình và giao thức hiện đại theo hướng dẫn bảo mật phù hợp [17], [18].
+Tài liệu tham khảo
+[10] W. Stallings, Cryptography and Network Security: Principles and Practice, Global Edition. Pearson. (Đối chiếu năm/ấn bản với giáo trình sử dụng).
+[11] E. Barker, Recommendation for Key Management: Part 1—General, NIST SP 800-57 Part 1 Rev. 5, 2020. https://doi.org/10.6028/NIST.SP.800-57pt1r5
+[12] T. Kleinjung et al., “Factorization of a 768-bit RSA modulus,” Cryptology ePrint Archive, Report 2010/006, 2010. https://eprint.iacr.org/2010/006
+[13] University of California San Diego, “New record set for cryptographic challenge,” 2020. https://jacobs.ucsd.edu/news/release/2991
+[14] E. Lu, “Factoring RSA-260,” Cognition, Sep. 9, 2026. https://cognition.com/blog/factoring-rsa-260
+[15] P. C. Kocher, “Timing attacks on implementations of Diffie-Hellman, RSA, DSS, and other systems,” in CRYPTO ’96, LNCS 1109, pp. 104–113, 1996. https://paulkocher.com/doc/TimingAttacks.pdf
+[16] D. Boneh, R. A. DeMillo, and R. J. Lipton, “On the importance of eliminating errors in cryptographic computations,” Journal of Cryptology, vol. 14, pp. 101–119, 2001. https://doi.org/10.1007/s001450010016
+[17] D. Bleichenbacher, “Chosen ciphertext attacks against protocols based on the RSA encryption standard PKCS #1,” in CRYPTO ’98, pp. 1–12, 1998. https://doi.org/10.1007/BFb0055716
+[18] H. Böck, J. Somorovsky, and C. Young, “Return of Bleichenbacher’s Oracle Threat (ROBOT),” USENIX Security Symposium, 2018. https://www.usenix.org/conference/usenixsecurity18/presentation/bock
+[19] P. W. Shor, “Algorithms for quantum computation: Discrete logarithms and factoring,” in FOCS, pp. 124–134, 1994. https://doi.org/10.1109/SFCS.1994.365700
+[20] C. Gidney, “How to factor 2048 bit RSA integers with less than a million noisy qubits,” arXiv:2505.15917, 2025. https://arxiv.org/abs/2505.15917
+[21] P. Webster et al., “The Pinnacle Architecture: Reducing the cost of breaking RSA-2048 to 100 000 physical qubits using quantum LDPC codes,” arXiv:2602.11457, 2026. https://arxiv.org/abs/2602.11457
+[22] National Institute of Standards and Technology, Module-Lattice-Based Key-Encapsulation Mechanism Standard, FIPS 203, 2024. https://doi.org/10.6028/NIST.FIPS.203
+[23] National Institute of Standards and Technology, Module-Lattice-Based Digital Signature Standard, FIPS 204, 2024. https://doi.org/10.6028/NIST.FIPS.204
+[24] National Institute of Standards and Technology, Stateless Hash-Based Digital Signature Standard, FIPS 205, 2024. https://doi.org/10.6028/NIST.FIPS.205
+[25] D. Moody, R. Perlner, A. Regenscheid, A. Robinson, and D. Cooper, Transition to Post-Quantum Cryptography Standards, NIST IR 8547, Oct. 2026. https://doi.org/10.6028/NIST.IR.8547
